@@ -6,66 +6,112 @@
     <title>Chatbot</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            margin: 0;
+            background-color: #f5f5f5;
         }
         .chat-container {
-            width: 300px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
+            height: 80vh; /* Adjust height as needed */
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
         }
         .chat-box {
-            border: 1px solid #ccc;
+            flex: 1;
             padding: 10px;
+            overflow-y: auto;
+            background-color: #f5f5f5;
+        }
+        .chat-message {
             margin-bottom: 10px;
-            height: 200px;
-            overflow-y: scroll;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .chat-message.user {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+        .chat-message.bot {
+            background-color: #e9ecef;
+            color: #333;
+            align-self: flex-start;
         }
         .input-box {
             display: flex;
+            border-top: 1px solid #ddd;
         }
         .input-box input[type="text"] {
             flex: 1;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px 0 0 5px;
+            border: none;
+            border-radius: 0;
         }
         .input-box button {
             padding: 10px;
             border: none;
-            background-color: #007BFF;
+            background-color: #007bff;
             color: white;
-            border-radius: 0 5px 5px 0;
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .input-box button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
+        <div class="chat-header">
+            Chatbot
+        </div>
         <div class="chat-box" id="chat-box">
             <!-- Chat messages will appear here -->
         </div>
         <div class="input-box">
-            <input type="text" id="user-input" placeholder="Type your message here...">
+            <input type="text" id="user-input" placeholder="Type your message here..." onkeydown="handleKey(event)">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
+        function handleKey(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
         async function sendMessage() {
             const userInput = document.getElementById('user-input').value;
             const chatBox = document.getElementById('chat-box');
-            
+
+            if (!userInput.trim()) return;
+
             // Add user's message to the chat box
             const userMessage = document.createElement('div');
-            userMessage.textContent = 'You: ' + userInput;
+            userMessage.className = 'chat-message user';
+            userMessage.textContent = userInput;
             chatBox.appendChild(userMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Clear the input field
+            document.getElementById('user-input').value = '';
 
             // Send user input to the server
             const response = await fetch('/chat', {
@@ -78,11 +124,10 @@
 
             const data = await response.json();
             const botMessage = document.createElement('div');
-            botMessage.textContent = 'Chatbot: ' + data.reply;
+            botMessage.className = 'chat-message bot';
+            botMessage.textContent = data.reply;
             chatBox.appendChild(botMessage);
-
-            // Clear the input field
-            document.getElementById('user-input').value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
 </body>
