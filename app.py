@@ -5,7 +5,7 @@ app = Flask(__name__)
 #-----------------------------------------------------------------------------------
 """
 Install the Google AI Python SDK
-
+$ pip install requests
 $ pip install google-generativeai
 
 See the getting started guide for more information:
